@@ -34,7 +34,6 @@ class RegisteredModelViewSet(viewsets.ModelViewSet):
         confirmed_upload = request.data.get('confirmed_upload') 
         foreign_key_map = request.data.get('foreign_key_map')
         kwargs = {'file_type': 'xls'}
-        print('sadasdas')
         if confirmed_upload is not None:
             kwargs['confirmed_upload']= confirmed_upload
         elif confirmed_upload is None:

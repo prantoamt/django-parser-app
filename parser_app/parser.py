@@ -217,7 +217,6 @@ class DataParser(object):
             'required_fields': self.__required_fields,
             'foreign_key_fields': self.__foreign_key_field
         }
-        print(context,'-----------')
         serializer = MappingErrorSerializer(data=context)
         serializer.is_valid(raise_exception=True)
         return (serializer.data)    
