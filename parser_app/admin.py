@@ -10,7 +10,7 @@ class RegisteredModelAdmin(admin.ModelAdmin, AdminMixin):
     readonly_fields= ['model_name','app_label_name', 'model_fields', 'mapped_fields']
     fields = ['model_name','app_label_name', 'model_fields', 'mapped_fields']
 
-    actions = ["import_with_data_parser"]
+    actions = ["import_with_parser_app"]
 
     def has_add_permission(self, request):
         return True

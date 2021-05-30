@@ -8,7 +8,7 @@ from parser_app.views import import_data_with_data_parser_view
 
 class AdminMixin(object):
     
-    def import_with_data_parser(self, request, queryset):
+    def import_with_parser_app(self, request, queryset):
         if len(queryset) > 1:
             self.message_user(request, 'Please select only one model', messages.WARNING)
         else:
