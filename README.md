@@ -6,9 +6,24 @@ This is a rest_framework based packege and is usuable in many projects.
 
 Detailed documentation is in the "docs" directory.
 
-Quick start
------------
+##### Table of Contents  
+----------------------------------------------------------------
+- [Quick start](#quick-start)
+    + [Install Dependencies](#install-dependencies)
+    + [Configure Project](#configure-project)
+    + [Register Models](#register-models)
+      - [models.py](#modelspy)
+      - [admin.py](#adminpy)
+    + [Run Project](#run-project)
+  * [Import data through Django admin panel](#import-data-through-django-admin-panel)
 
+<small>*Feel free to contribute in the ``parser_app``. Your contributions are always appreciated!*</small>
+
+
+# Quick start
+-----------
+### Install Dependencies
+------------------------
 1. Install django-parser-app ``pip install django-parser-app``
 
 2. Add ``parser_app`` and it's dependencies to your ``INSTALLED_APPS`` setting like this::
@@ -20,12 +35,15 @@ Quick start
         'corsheaders',
     ]
     ```
-3. Add SITE_URL in setting::
+### Configure Project
+----------------------
+
+1. Add SITE_URL in setting::
     ```
     SITE_URL = 'http://yoursiteurl.com'
     ```
 
-4. Implement Django Dependancy Settings:
+2. Implement Django Dependancy Settings:
     - [Django Rest Framework](http://www.django-rest-framework.org/)
     - [Django Cors Headers](https://github.com/ottoyiu/django-cors-headers)
 
@@ -54,14 +72,17 @@ Quick start
 
 
 
-5. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like below::
+3. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like below::
     ```
     path('api/', include('parser_app.urls')),
     ```
 
-6. Run ``python manage.py migrate`` to create the parser_app models.
+4. Run ``python manage.py migrate`` to create the parser_app models.
 
-7. Register your models in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
+### Register Models
+-------------------
+
+1. Register your models in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
     #### models.py
     ```
     class Area(models.Model):
@@ -88,12 +109,13 @@ Quick start
 
     DataParser.register_model(Area)
     ```  
-
-8. Start the development server ``python manage.py runserver 0.0.0.0:8000`` and visit http://yoursiteurl:8000/admin/. 
+### Run Project
+---------------
+1. Start the development server ``python manage.py runserver 0.0.0.0:8000`` and visit http://yoursiteurl:8000/admin/. 
 After logging in, you will see a new model named ``Registered Models`` under ``parser_app`` section. All your registered models will be listed here.
 
-Import data to Area model through Django admin panel
-----------------------------------------------------
+## Import data through Django admin panel
+------------------------------------------
 
 ![Alt Text](https://github.com/prantoamt/django-parser-app/blob/main/images/upload_via_admin_panel.gif)
 
@@ -108,5 +130,3 @@ Import data to Area model through Django admin panel
 9. If no validation errors are found, you will be asked to confirm upload.
 10. After confirmation, your data wil be imported in the desired model (in case of this example, ``Area`` model).
 
-
-**Feel free to participate in the parser_app. I appreciate your contributions! 
