@@ -54,14 +54,14 @@ Quick start
 
 
 
-5. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like this::
+5. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like below::
     ```
     path('api/', include('parser_app.urls')),
     ```
 
 6. Run ``python manage.py migrate`` to create the parser_app models.
 
-7. Register your models which your want to import data using Excel files in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
+7. Register your models in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
     #### models.py
     ```
     class Area(models.Model):
@@ -89,8 +89,8 @@ Quick start
     DataParser.register_model(Area)
     ```  
 
-8. Start the development server ``python manage.py runserver 0.0.0.0:8000`` and visit http://127.0.0.1:8000/admin/. 
-After login, you will see a new model named ``RegisteredModels``. All your registered models will be listed here.
+8. Start the development server ``python manage.py runserver 0.0.0.0:8000`` and visit http://yoursiteurl:8000/admin/. 
+After logging in, you will see a new model named ``Registered Models`` under ``parser_app`` section. All your registered models will be listed here.
 
 Import data to Area model through Django admin panel
 ----------------------------------------------------
