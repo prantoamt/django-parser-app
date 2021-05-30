@@ -1,7 +1,7 @@
 django-parser-app
 =====
 
-parser_app has been created intending to upload XL files in a convenient manner.
+parser_app has been created intending to upload Excel files in a convenient manner.
 This is a rest_framework based packege and is usuable in many projects.
 
 Detailed documentation is in the "docs" directory.
@@ -61,7 +61,7 @@ Quick start
 
 6. Run ``python manage.py migrate`` to create the parser_app models.
 
-7. Register your models which your want to import data using XL files in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
+7. Register your models which your want to import data using Excel files in ``admin.py`` file. A demo model and it's admin.py file is given below:: 
     #### models.py
     ```
     class Area(models.Model):
@@ -101,9 +101,9 @@ Import data to Area model through Django admin panel
 2. You will see the ``Area`` model listed there.
 3. Select the check box and then click on the django admin action panel.
 4. Select ``import with parser app`` and click on ``go``.
-5. Select your desired XL file and submit.
-6. In the next step, you will be given the model's columns and the columns available in the XL file.
-7. Map the columns to specify which column of the XL file means which column of the Model and then submit.
+5. Select your desired Excel file and submit.
+6. In the next step, you will be given the model's columns and the columns available in the Excel file.
+7. Map the columns to specify which column of the Excel file means which column of the Model and then submit.
 8. You will the shown the estimated data type validation errors in the next step. For example, your model field accept ``int`` value but your file contains ``string``.
 9. If no validation errors are found, you will be asked to confirm upload.
 10. After confirmation, your data wil be imported in the desired model (in case of this example, ``Area`` model).
