@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+db.sqlite3
+*.DS_Store
+.media
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/
+.DS_Store
