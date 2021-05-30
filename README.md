@@ -87,9 +87,26 @@ Quick start
     from parser_app.parser import DataParser
 
     DataParser.register_model(Area)
-    ```
+    ```  
 
 8. Start the development server ``python manage.py runserver 0.0.0.0:8000`` and visit http://127.0.0.1:8000/admin/. 
 After login, you will see a new model named ``RegisteredModels``. All your registered models will be listed here.
 
-9. Visit http://github.com/prantoamt/django-parser-app/ to participate in the parser_app.
+Import data to Area model through Django admin panel
+----------------------------------------------------
+
+![Alt Text](https://github.com/prantoamt/django-parser-app/blob/main/images/upload_via_admin_panel.gif)
+
+1. Click on the ``Registred Models`` that is located inside ``parser_app`` section.
+2. You will see the ``Area`` model listed there.
+3. Select the check box and then click on the django admin action panel.
+4. Select ``import with parser app`` and click on ``go``.
+5. Select your desired XL file and submit.
+6. In the next step, you will be given the model's columns and the columns available in the XL file.
+7. Map the columns to specify which column of the XL file means which column of the Model and then submit.
+8. You will the shown the estimated data type validation errors in the next step. For example, your model field accept ``int`` value but your file contains ``string``.
+9. If no validation errors are found, you will be asked to confirm upload.
+10. After confirmation, your data wil be imported in the desired model (in case of this example, ``Area`` model).
+
+
+**Feel free to participate in the parser_app. I appreciate your contributions! 
