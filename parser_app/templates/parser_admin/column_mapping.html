@@ -1,0 +1,184 @@
+{% extends "parser_admin/base.html" %}
+
+{% block content %}
+    {% include 'parser_admin/partials/_toast_messages.html' %}
+    {% include 'parser_admin/partials/_overlay.html' %}
+    {% block loadersetup %}
+        <script>setupLoader()</script>
+    {% endblock %}
+
+
+    <div class="card">
+        <div class="card-header">
+            <div class="float-left">
+                <h5 class="card-title">{{title}}</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if required_fields %}
+                <div class="row d-flex justify-content-center">
+                    <span class="alert alert-danger card-title" role="alert">These fields are required to map:
+                        {% for item in required_fields %}
+                            {% if forloop.last %}
+                                {{item}}.
+                            {% else %}
+                                &nbsp; {{item}}, &nbsp;
+                            {% endif %}    
+                        {% endfor %}
+                    </span>
+                </div>    
+            {% endif %}
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <table class="table table-striped table-bordered mappings" id="mapping_table">
+                        <thead>
+                        <th scope="col">Model Columns</th>
+                        <th scope="col" >Spreadsheet Columns</th>
+                        </thead>
+                        <tbody>
+                        {% for model_column in model_columns %}
+                        <tr id="unmapped">
+                            <td id="rel_model_{{forloop.counter0}}">{{model_column}}</td>
+                            <td>
+                                <select id="rel_file_{{forloop.counter0}}">
+                                    {% for file_column in file_columns %} 
+                                        <option value="{{file_column}}">{{file_column}}</option>
+                                    {% endfor %}
+                                        <option value="Ignore">Ignore</option>
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col mx-auto" style="margin-top: 10px;">
+                        <a class="btn btn-info rounded-0" id="submit_mapping" type="submit" style="float: right;">
+                            Submit
+                        </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div id="response" style="margin-top: 20px; text-align: center;"></div>
+                    </div>
+            </div>
+        </div>
+    
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            toastr["info"]("Please map your spreadsheet columns with model's fields")
+            
+            const csrftoken = getCookie('csrftoken');
+    
+            $("#submit_mapping").click(function(e){
+                toastr["info"]("Your request is being processed. Please wait.")
+                $("#loading_span").addClass("spinner-grow text-info")
+                $("#submit_button").attr("disabled", true);
+                if ($("#submit_mapping").text().trim().toLowerCase() == "submit"){
+                    // e.preventDefault()
+                    let mapping = []
+                    $('#mapping_table tr').each(function (i, row) {
+                        let obj = {}
+                        model_column = $("#rel_model_"+i).text()
+                        file_column = $("#rel_file_"+i).children("option:selected").val()
+                        if (model_column != undefined && model_column != ""){
+                            obj['model_column'] = model_column
+                        } 
+                        if (file_column != undefined && file_column != ""){
+                            obj['file_column'] = file_column
+                        }
+                        if(JSON.stringify(obj) != JSON.stringify({})){
+                            mapping.push(obj)
+                        }
+    
+                    });
+                    var form_data = new FormData()
+                    form_data.append('model', '{{model}}')
+                    form_data.append('mapped_columns', JSON.stringify(mapping))
+                    let endpoint =  "{{base_url}}/data_parser/"
+                    // Send request
+                    
+                    $.ajax({ 
+                        url: endpoint,
+                        data: form_data,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                        processData: false, // NEEDED, DON'T OMIT THIS
+                        success: function(res){
+                            stopLoader()
+                            if (res.total_errors){
+                                toastr["warning"]("Your input file has total " + res.total_errors + " validation erros. Please fix them and try again.")
+                                var content = "<ol>"
+                                res.detail.forEach(function(item, idx){
+                                    content += "<li class='error'>" + item.error + "</li>"
+                                })
+                                content += "</ol>"
+                                $("#response").empty()
+                                $('#response').addClass('text-center alert alert-danger')
+                                $("#response").append(content)
+                                $("#submit_mapping").attr("disabled", false);
+                            }
+                            else{
+                                toastr["info"](res.detail[0].error)
+                                // let content = "<ul class='messagelist'> <li class='success'>" + res.detail[0].error + "</li> </ul>"
+                                // content += "<button class='btn btn-info' id='confirmed_upload' type='submit' style='float: center;'><span id='loading_span' role='status' aria-hidden='true'></span>Confirm Upload</button>"
+                                $("#response").empty()
+                                $('#response').removeClass('text-center alert alert-success')
+                                // $("#response").append(content)
+                                $("#submit_mapping").text("Confirm Upload");
+                                $("#submit_mapping").attr("disabled", false);
+                            }
+                            
+                        },
+                        error: function(err){
+                            stopLoader()
+                            toastr["error"](err['responseJSON']['detail'])
+                            let content = "<ul class='messagelist'> <li class='error'>" + err['responseJSON']['detail']+ "</li> </ul>"
+                            $("#response").empty()
+                            $('#response').removeClass('text-center alert alert-error')
+                            // $("#response").append(content)                        
+                            $("#submit_mapping").attr("disabled", false);
+                        }
+                    });
+                }
+    
+                else if ($("#submit_mapping").text().trim().toLowerCase() == "confirm upload"){
+                    var form_data_for_confirmed = new FormData()
+                    form_data_for_confirmed.append('model', '{{model}}')
+                    form_data_for_confirmed.append('confirmed_upload', true)
+                    let endpoint =  "{{base_url}}/data_parser/"
+    
+                    $.ajax({ 
+                        url: endpoint,
+                        data: form_data_for_confirmed,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                        processData: false, // NEEDED, DON'T OMIT THIS
+                        success: function(res){
+                            stopLoader()
+                            toastr["info"](res.detail)
+                            window.location.href="/admin";
+                        },
+                        error: function(err){
+                            stopLoader()
+                            toastr["error"](err['responseJSON']['detail'])
+                            let content = "<ul class='messagelist'> <li class='error'>" + err['responseJSON']['detail']+ "</li> </ul>"
+                            $("#response").empty()
+                            $('#response').removeClass('text-center alert alert-success')
+                            // $("#response").append(content)                        
+                            $("#submit_mapping").attr("disabled", false);
+                        }
+                    });
+                }
+            })
+        })
+    </script>
+{% endblock %}

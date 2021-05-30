@@ -1,0 +1,93 @@
+The parser takes an excel file as input and stores the data in the corresponsing registered 
+    model. The parser is used in two stage: 1) configuration, 2) execution
+    ----------------------------------------configuration----------------------------------------------
+    1) define your site url in settings.py like this:: SITE_URL = 'http://examplesite.com'
+    2) register a moder using the register_model() static function in admin.py file.
+     -> example: DataParser.register_model(Area); (Here Area is a usual Django Model)
+    3) after registering, restart the server.
+    4) the model's meta data will be recorded in 'RegisteredModels' model. All registered models 
+    can be seen in "Registered models" model under the parser_app section.
+    4) If any of your  registered model has foreign keys, you must configure this in settings.py like below:
+    ----------------------------
+        Example:
+            * suppose your Area model has five fields, 'code', 'location_name', 'location_type', 'parent_code' and 'disctrict'.
+            * where district refers to District model.
+            * the District model has two fields, district_code and name.
+            * if you are providing the name of the district in your XL file,
+            * then your foreign key configuration in settings.py will be like this::
+                FOREIGN_KEY_CONFIG_FOR_DATA_PARSER = {
+                    'Area': [{'disctrict': 'name'}],
+                }
+            * If you have multiple foreign keys in Area model, just add the key value pair in comman separated format like this::
+                FOREIGN_KEY_CONFIG_FOR_DATA_PARSER = {
+                'Area': [{'disctrict': 'name', 'foriegn_key_field_two': 'value_you_are_providing_in_xl'}],
+            }
+    ----------------------------
+
+    ------------------------------------------execution-----------------------------------------------
+    1) after that, make an api POST request with two parameters. 
+        'model': 'the model's name you are wishing to import data using xl'.
+        'file': 'the xl file itself'.
+        ---------------------
+        Example input:
+        {
+            'model': 'Area'
+            'file': 'area.xlsx'
+        }    
+        ---------------------
+    2) the parser will return you the model's meta data and the xl file's column names under the keys:
+        'model_columns', 'file_columns', 'required_fields', 'foreign_key_fields'
+        ---------------------
+        Example output:
+        {
+            'model_columns': ['code', 'location_name', 'location_type', 'parent_code', 'disctrict'],
+            'file_columns': ['code', 'name', 'type', 'parent', 'area district'],
+            'required_fields': ['code', 'parent_code', 'district'],
+            'foreign_key_fields': ['district']
+        }
+        ---------------------
+    3) In the next step, the front-end developer should map the model columns and file columns. 
+        The developer must force the users to map required fileds' columns. After that, the developer 
+        will make the second POST request with the 'model name' and 'mapped columns'.
+        ---------------------
+        Example input:
+        {
+            'model': 'Area',
+            'mapped_columns': [{'file_column':'code', 'model_column':'code'}, 
+                            {'file_column':'name', 'model_column':'location_name'}, 
+                            {'file_column':'ignore', 'model_column':'location_type'}, 
+                            {'file_column':'parent', 'model_column':'parent_code'},
+                            {'file_column':'area district', 'model_column':'disctrict'}]
+
+            **here, if the file_column receives 'ignore' mapped with any model_column,
+            the parser will assume the user do not have value for this column and want
+            to put blank value in this column for each object. Therefore, While new objects
+            will be created, this field's value will be None. In the example above, 'location_type'
+            is such field/column.
+        }
+        ---------------------
+    4) With this response, the parser will validate the file's input data and return the response as 
+        follows if any validation error encouters:
+        ---------------------
+        Example output: (case 1)
+        {
+            'detail': 'error': [{'Field 'code' expected int but got 'Amtali' at row no 4'}],
+            'total_errors': 1,
+        }
+        ---------------------
+        if no validation error found:
+        Example output: case (2)
+        {
+            'detail' : 'errors': [{'error': 'No validation error encountered. Your input file has 30 
+            items which already exists in the database. Therefore, 50 new items will be created.'}]
+        }
+        ---------------------
+    5) front-end should not allow users to confirm upload untill validation errors are fixed. Once the 
+        step 4 returns No validation error message (case 2), the front-end can make it's final POST request with
+        model name and confirmed upload key as follows:
+        ---------------------
+        Example input:
+        {
+            'model': 'Area',
+            'confirmed_upload': true,
+        }

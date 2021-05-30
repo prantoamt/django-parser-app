@@ -1,0 +1,132 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block title %} Import with Data Parser {% endblock %}
+{% block branding %}
+<h1 id="site-name"><a href="#">Data Parser</a></h1>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Admin Home</a>
+    &rsaquo;
+    <a href="#">Data Parser</a>
+    &rsaquo;
+    {{ label }}
+</div>
+{% endblock %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'parser_admin/css/parser_custom.css' %}">
+    <link rel="stylesheet" href="{% static 'parser_admin/css/toastr.min.css' %}">
+
+    <script src="{% static 'parser_admin/js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'parser_admin/js/toastr.min.js' %}"></script>
+    <script src="{% static 'parser_admin/js/toast-maker.js' %}"></script>
+    <script src="{% static 'parser_admin/js/functions.js' %}"></script>
+{% endblock %}
+{% block content_title %}
+<h1>{{label}}</h1>
+{% endblock %}
+
+{% block content %}
+    {% include 'parser_admin/partials/_toast_messages.html' %}
+    {% include 'parser_admin/partials/_overlay.html' %}
+    {% block loadersetup %}
+        <script>setupLoader()</script>
+    {% endblock %}
+    <div class="card">
+        <div class="card-header">
+            <div class="float-left">
+                <h5 class="card-title">{{title}}</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <form method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+                        <input type="file" id="file_input" name="filename" multiple>
+                        <a class="btn btn-info rounded-0" id="submit_button" type="submit">
+                            Submit
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+            <!-- form for column mapping -->
+            <div class="row">
+            <div id="column_value_assign" style="display: none;">
+                <form id="column_mapping_form" method="post" action="{% url 'map_columns' %}"> {% csrf_token %}
+                    <input type="text" id="model_name" name="model_name">
+                    <input type="text" id="model_columns" name="model_columns">
+                    <input type="text" id="file_columns" name="file_columns">
+                    <input type="text" id="required_fields" name="required_fields">
+                </form>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div id="response" style="margin-top: 20px; text-align: center;"></div>
+                </div>
+            </div>
+    <!------------------------->
+        </div>
+
+    </div>
+
+    <script>
+        const csrftoken = getCookie('csrftoken');
+        
+        $("#submit_button").click(function(e){
+            e.preventDefault()
+            let file_input = document.getElementById('file_input').files[0];
+            if(!file_input){
+                toastr["error"]("Please select a file to upload")
+                return
+            }
+            toastr["info"]("Processing the file. Please wait.")    
+            $("#submit_button").attr("disabled", true);
+            $("#response").empty()
+            
+            var form_data = new FormData()
+            form_data.append('model', '{{model}}')
+            form_data.append('file', file_input)
+            if("{{foreign_key_config_for_data_parser|safe}}" != ""){
+                form_data.append('foreign_key_map', "{{foreign_key_config_for_data_parser|safe}}")
+            }
+            
+            let endpoint =  "{{base_url}}/data_parser/"
+        
+            $.ajax({ 
+                url: endpoint,
+                data: form_data,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                processData: false, // NEEDED, DON'T OMIT THIS
+                success: function(res){
+                    stopLoader()
+                    if(res.model_columns){
+                        $("#model_name").val("{{model}}")
+                        $("#model_columns").val(res.model_columns)
+                        $("#file_columns").val(res.file_columns)
+                        $("#required_fields").val(res.required_fields)
+                        $("#column_mapping_form").submit()
+                    }
+                    else{
+                        toastr["error"](res.detail)                
+                        $("#submit_button").attr("disabled", false);
+                    }
+                },
+                error: function(err){
+                    stopLoader()
+                    toastr["error"](err['responseJSON']['detail'])            
+                    $("#submit_button").attr("disabled", false);
+                }
+                });
+        
+        })
+        </script>
+    
+{% endblock %}

@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+recursive-include parser_app/static *
+recursive-include parser_app/templates *
+recursive-include parser_app/migrations *
+recursive-include parser_app/api *
+recursive-include docs *
