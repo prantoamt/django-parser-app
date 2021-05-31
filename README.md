@@ -9,7 +9,7 @@ Detailed documentation is in the "docs" directory.
 ##### Table of Contents  
 ----------------------------------------------------------------
 - [Quick start](#quick-start)
-    + [Install Dependencies](#install-dependencies)
+    + [Install the App](#install-the-app)
     + [Configure Project](#configure-project)
     + [Register Models](#register-models)
       - [models.py](#modelspy)
@@ -22,11 +22,13 @@ Detailed documentation is in the "docs" directory.
 
 # Quick start
 -----------
-### Install Dependencies
+### Install the app
 ------------------------
 1. Install django-parser-app ``pip install django-parser-app``
 
-2. Add ``parser_app`` and it's dependencies to your ``INSTALLED_APPS`` setting like this::
+### Configure Project
+----------------------
+1. Add ``parser_app`` and it's dependencies to your ``INSTALLED_APPS`` setting like this::
     ```
     INSTALLED_APPS = [
         ...
@@ -35,15 +37,12 @@ Detailed documentation is in the "docs" directory.
         'corsheaders',
     ]
     ```
-### Configure Project
-----------------------
-
-1. Add SITE_URL in setting::
+2. Add SITE_URL in setting::
     ```
     SITE_URL = 'http://yoursiteurl.com'
     ```
 
-2. Implement Django Dependancy Settings:
+3. Implement Django Dependancy Settings:
     - [Django Rest Framework](http://www.django-rest-framework.org/)
     - [Django Cors Headers](https://github.com/ottoyiu/django-cors-headers)
 
@@ -72,12 +71,12 @@ Detailed documentation is in the "docs" directory.
 
 
 
-3. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like below::
+4. parser_app is a api based packege. Include it's URLconf in your project urls.py exactly like below::
     ```
     path('api/', include('parser_app.urls')),
     ```
 
-4. Run ``python manage.py migrate`` to create the parser_app models.
+5. Run ``python manage.py migrate`` to create the parser_app models.
 
 ### Register Models
 -------------------
@@ -117,7 +116,7 @@ After logging in, you will see a new model named ``Registered Models`` under ``p
 ## Import data through Django admin panel
 ------------------------------------------
 
-![Alt Text](https://github.com/prantoamt/django-parser-app/blob/main/images/upload_via_admin_panel.gif)
+<img src="https://github.com/prantoamt/django-parser-app/blob/main/images/upload_via_admin_panel.gif" width="100%" height="300"/>
 
 1. Click on the ``Registred Models`` that is located inside ``parser_app`` section.
 2. You will see the ``Area`` model listed there.
