@@ -1,7 +1,7 @@
 django-parser-app
 =================
 
-parser_app has been created intending to upload Excel files in a convenient manner.
+parser_app has been created intending to import Excel file data to django models in a convenient manner.
 This is a rest_framework based packege and is usuable in many projects.
 
 Detailed documentation is in the "docs" directory.
