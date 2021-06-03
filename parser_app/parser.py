@@ -178,6 +178,7 @@ class DataParser(object):
         if(file_type not in ['csv','xls','xlsx']):
             raise APIException('Only csv, xls and xlsx format is supported')
         df = pd.read_excel(self.__model_object_in_register_model.file_input)
+        df = df.drop_duplicates()
 
         # df = df.replace(to_replace='None', value=np.nan).dropna()
 
