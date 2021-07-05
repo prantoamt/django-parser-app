@@ -4,7 +4,7 @@ django-parser-app
 parser_app has been created intending to import Excel file data to django models in a convenient manner.
 This is a rest_framework based packege and is usuable in many projects.
 
-Detailed documentation is in the "docs" directory.
+*This package is only compatible with PostgreSQL (tested with PostgreSQL version 13 and 13.3)*
 
 ##### Table of Contents  
 ----------------------------------------------------------------
